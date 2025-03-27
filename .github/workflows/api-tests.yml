@@ -17,10 +17,13 @@ jobs:
 
       - name: Install Dependencies
         run: |
+          python -m venv venv
+          source venv/bin/activate
           pip install -r requirements.txt
 
       - name: Start FastAPI Server
         run: |
+          source venv/bin/activate
           uvicorn apiserver:app --host 0.0.0.0 --port 8000 --reload &
         env:
           PYTHONUNBUFFERED: 1
@@ -30,6 +33,10 @@ jobs:
           sleep 5
           curl --retry 5 --retry-delay 5 --retry-connrefused http://127.0.0.1:8000
 
+      - name: Debug - List Files
+        run: ls -R
+
       - name: Run Tests
         run: |
+          source venv/bin/activate
           pytest testautomation2.py
