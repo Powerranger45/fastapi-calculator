@@ -7,26 +7,29 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+      - name: Checkout Repository
+        uses: actions/checkout@v3
 
       - name: Set up Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
-          python-version: "3.10"
+          python-version: 3.10
 
-      - name: Install dependencies
+      - name: Install Dependencies
         run: |
-          pip install fastapi uvicorn pytest requests
+          pip install -r requirements.txt
 
-      - name: Start FastAPI server
+      - name: Start FastAPI Server
         run: |
-          uvicorn apiserver:app --host 127.0.0.1 --port 8000 &
+          uvicorn apiserver:app --host 0.0.0.0 --port 8000 --reload &
         env:
           PYTHONUNBUFFERED: 1
 
-      - name: Wait for server to be ready
-        run: sleep 5  # Give time for the server to start
+      - name: Wait for API to be Ready
+        run: |
+          sleep 5
+          curl --retry 5 --retry-delay 5 --retry-connrefused http://127.0.0.1:8000
 
-      - name: Run tests
-        run: pytest testAutomation2.py
+      - name: Run Tests
+        run: |
+          pytest testautomation2.py
